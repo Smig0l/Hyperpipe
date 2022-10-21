@@ -168,6 +168,33 @@ onMounted(() => {
       }
     });
 
+ 
+  //  navigator.mediaSession.setActionHandler("previoustrack", () => AudioPlayer.previous());
+	//	navigator.mediaSession.setActionHandler("nexttrack", () => AudioPlayer.next());
+    
+
+
+    const setPosition = () => {
+	if ("mediaSession" in navigator) {
+		navigator.mediaSession.setPositionState({
+			duration: AudioPlayer.isWebkit ? AudioPlayer.duration / 2 : AudioPlayer.duration,
+			position: AudioPlayer.currentTime,
+		});
+
+    navigator.mediaSession.setActionHandler("seekto", (session) => {
+			if (session.fastSeek && "fastSeek" in AudioPlayer.player) {
+				AudioPlayer.player.fastSeek(session.seekTime);
+				setPosition();
+				return;
+			}
+			AudioPlayer.seek(session.seekTime);
+
+			setPosition();
+		});
+  }
+  };
+    
+    /*
     navigator.mediaSession.setActionHandler('seekbackward', () => {
       audio.value.duration -= 10;
     });
@@ -175,8 +202,10 @@ onMounted(() => {
     navigator.mediaSession.setActionHandler('seekforward', () => {
       audio.value.duration += 10;
     });
+    */
   }
 });
+    
 
 onBeforeUnmount(() => {
   if (window.audioPlayer) {
